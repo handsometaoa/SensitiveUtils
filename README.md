@@ -24,12 +24,12 @@
    User user = new User();
    user.setName("xiaoming");
    user.setPhone("13455556666");
-   String strResult4 = NewSensitiveUtils.desMobilePhone(user, "phone");
+   String strResult4 = SensitiveUtils.desMobilePhone(user, "phone");
    System.out.println(strResult4); // {"phone":"134****6666","name":"xiaoming"}
    
    // 传入json字符串
    String str1 = "{\"name\":\"xiaoming\",\"phone\":\"13455556666\"}";
-   String strResult5 = NewSensitiveUtils.desMobilePhone(str1, "phone");
+   String strResult5 = SensitiveUtils.desMobilePhone(str1, "phone");
    System.out.println(strResult5); // {"phone":"134****6666","name":"xiaoming"}
    ```
 
@@ -41,7 +41,7 @@
    上图中，如果要脱敏全部手机号，路径则为 ：`phone` , `parent#phone`
    ```
    String str8 = "[{\"name\":\"xiaoliu\",\"phone\":\"13522222222\",\"parent\":[{\"name\":\"oldliu\",\"phone\":\"13533333333\"}]},{\"name\":\"xiaowang\",\"phone\":\"13500000000\",\"parent\":[{\"name\":\"oldwang\",\"phone\":\"13511111111\"},{\"name\":\"oldzhang\",\"phone\":\"13555555555\"}]}]";
-   String strResult8 = NewSensitiveUtils.desMobilePhone(str8, new HashSet<>(Arrays.asList("phone", "parent#phone")));
+   String strResult8 = SensitiveUtils.desMobilePhone(str8, new HashSet<>(Arrays.asList("phone", "parent#phone")));
    System.out.println(strResult8);
    ```
 
@@ -50,7 +50,7 @@
    上图中，如果要脱敏全部手机号，路径则为 ：`phone` , `parent#phone`
    ```
    String str9 = "{\"name\":\"xiaowang\",\"phone\":\"13500000000\",\"parent\":{\"name\":\"oldwang\",\"phone\":\"13511111111\"}}";
-   String strResult9 = NewSensitiveUtils.desMobilePhone(str9, new HashSet<>(Arrays.asList("phone", "parent#phone")));
+   String strResult9 = SensitiveUtils.desMobilePhone(str9, new HashSet<>(Arrays.asList("phone", "parent#phone")));
    System.out.println(strResult9);
    ```
 
