@@ -59,7 +59,7 @@
 ## 缺陷
 
 1. 暂不支持连续俩层数组结构的JSON字符串/对象
-   ![79ce2fc02bb612c2868e8ef4e5caeec8.png](img/fe258599eb555f64f4e6f47aeef9c9f8.png) 
+   ![6ab0e3fea95ea83523dab99df46275b7.png](img/6ab0e3fea95ea83523dab99df46275b7.png) 
 2. 暂不支持对String以外类型脱敏
 3. 暂不支持字符串中【对象JSON字符串】脱敏
    ```
