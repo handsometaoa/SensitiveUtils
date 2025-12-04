@@ -4,7 +4,6 @@ package com.handsometaoa.desensitization.util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.handsometaoa.desensitization.dto.SensitivePath;
 import com.handsometaoa.desensitization.enums.DesensitizedType;
 
@@ -26,36 +25,41 @@ public class SensitiveUtils {
 
     // 路径分隔符
     public static final String PATH_SPLIT_CHAR = "#";
-    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
 
     public static String des(String jsonStr, Set<SensitivePath> pathSet) {
-        return desMultiLevelJson(jsonStr, pathSet);
+        return desMultiLevelJson(true, jsonStr, pathSet);
+    }
+
+    public static String des(Object Object, Set<SensitivePath> pathSet) {
+        return desMultiLevelJson(false, JSON.toJSONString(Object), pathSet);
     }
 
     /**
      * 处理多层级JSON 脱敏
      *
      * @param jsonStr {"phone":"13444444444","123":{"phone":"13444444444"}}
-     * @param pathSet ["phone","123#phone"]
+     * @param sensitivePathSet ["phone","123#phone"]
      * @return 脱敏后字符串 {"123":{"phone":"134****4444"},"phone":"134****4444"}
      */
-    private static String desMultiLevelJson(String jsonStr, Set<SensitivePath> pathSet) {
+    private static String desMultiLevelJson(boolean needCheckJsonStyle, String jsonStr, Set<SensitivePath> sensitivePathSet) {
         try {
-            if (!JSON.isValid(jsonStr) || pathSet == null || pathSet.isEmpty()) {
+            if (needCheckJsonStyle && !JSON.isValid(jsonStr)) {
+                return jsonStr;
+            }
+            if (sensitivePathSet == null || sensitivePathSet.isEmpty()) {
                 return jsonStr;
             }
             Object object = JSON.parse(jsonStr);
             List<JSONObject> pendingJsonObjectList = getPendingJsonObjectList(object);
             for (JSONObject jsonObject : pendingJsonObjectList) {
-                for (SensitivePath sensitivePath : pathSet) {
+                for (SensitivePath sensitivePath : sensitivePathSet) {
                     List<String> fieldNameList = Arrays.stream(sensitivePath.getFieldPath().split(PATH_SPLIT_CHAR)).collect(Collectors.toList());
                     recursiveReplacement(jsonObject, fieldNameList, sensitivePath);
                 }
             }
             return JSON.toJSONString(object);
         } catch (Exception e) {
-            logger.warning("脱敏失败! jsonStr " + jsonStr + ", pathSet => " + pathSet + "," + e);
+            logger.warning("脱敏失败! jsonStr " + jsonStr + ", sensitivePathSet => " + sensitivePathSet + "," + e);
             return jsonStr;
         }
     }
@@ -133,15 +137,15 @@ public class SensitiveUtils {
     public static void main(String[] args) {
         String jsonStr = "{\"phone\":\"12444444444\",\"123\":{\"phone\":\"12444444444\"}}";
         Set<SensitivePath> pathSet = new HashSet<>();
-        pathSet.addAll(SensitivePath.withBuiltInRuleList(Arrays.asList("phone", "123#phone"), DesensitizedType.MOBILE_PHONE));
+        pathSet.addAll(SensitivePath.withBuiltInRuleSet(Arrays.asList("phone", "123#phone"), DesensitizedType.MOBILE_PHONE));
 
-        Long startTime = System.currentTimeMillis();
-        String s = desMultiLevelJson(jsonStr, pathSet);
+        long startTime = System.currentTimeMillis();
+        String s = des(jsonStr, pathSet);
         System.out.println(s);
         System.out.println("耗时:" + (System.currentTimeMillis() - startTime));
 
-        Long startTime2 = System.currentTimeMillis();
-        String s2 = desMultiLevelJson(jsonStr, pathSet);
+        long startTime2 = System.currentTimeMillis();
+        String s2 = des(jsonStr, pathSet);
         System.out.println(s2);
         System.out.println("耗时:" + (System.currentTimeMillis() - startTime2));
     }

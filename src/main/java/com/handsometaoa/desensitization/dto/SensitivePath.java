@@ -3,6 +3,7 @@ package com.handsometaoa.desensitization.dto;
 import com.handsometaoa.desensitization.enums.DesensitizedType;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -45,12 +46,13 @@ public class SensitivePath {
         return new SensitivePath(fieldPath, customFunction);
     }
 
-    public static List<SensitivePath> withBuiltInRuleList(List<String> fieldPath, DesensitizedType desensitizedType) {
-        return fieldPath.stream().map(field -> SensitivePath.withBuiltInRule(field, desensitizedType)).collect(Collectors.toList());
+
+    public static Set<SensitivePath> withBuiltInRuleSet(List<String> fieldPath, DesensitizedType desensitizedType) {
+        return fieldPath.stream().map(field -> SensitivePath.withBuiltInRule(field, desensitizedType)).collect(Collectors.toSet());
     }
 
-    public static List<SensitivePath> withCustomRuleList(List<String> fieldPath, Function<String, String> customFunction) {
-        return fieldPath.stream().map(field -> SensitivePath.withCustomRule(field, customFunction)).collect(Collectors.toList());
+    public static Set<SensitivePath> withCustomRuleSet(List<String> fieldPath, Function<String, String> customFunction) {
+        return fieldPath.stream().map(field -> SensitivePath.withCustomRule(field, customFunction)).collect(Collectors.toSet());
     }
 
     public String getFieldPath() {
